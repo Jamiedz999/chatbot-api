@@ -43,7 +43,7 @@ public class ApiTest {
 
         String paramJson = "{\n" +
                 "  \"req_data\": {\n" +
-                "    \"text\": \"我也不知道\\n\\n\",\n" +
+                "    \"text\": \"我知道\\n\\n\",\n" +
                 "    \"image_ids\": [],\n" +
                 "    \"mentioned_user_ids\": []\n" +
                 "  }\n" +
@@ -63,4 +63,46 @@ public class ApiTest {
         }
 
     }
+
+    @Test
+    public void test_chatGPT() throws IOException{
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+
+        HttpPost post = new HttpPost("https://api.tryallai.com/v1/chat/completions");
+        post.addHeader("Content-type", "application/json");
+        post.addHeader("Authorization", "Bearer sk-m1if4UbbR9NXDSwWPRJYugZnWuZTa2C7w4pNRmkNlIQXUFj0");
+
+        String paramJson = "{\n" +
+                "  \"model\": \"gpt-5-mini\",\n" +
+                "  \"stream\": false,\n" +
+                "  \"messages\": [\n" +
+                "    {\n" +
+                "      \"role\": \"user\",\n" +
+                "      \"content\": [\n" +
+                "        {\n" +
+                "          \"type\": \"text\",\n" +
+                "          \"text\": \"帮我写一个java冒泡排序\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ],\n" +
+                "  \"max_tokens\": 4000\n" +
+                "}";
+
+
+        StringEntity stringEntity= new StringEntity(paramJson,
+                ContentType.create("text/json",
+                        "UTF-8"));
+        post.setEntity(stringEntity);
+
+        CloseableHttpResponse response = httpClient.execute(post);
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            String res = EntityUtils.toString(response.getEntity());
+            System.out.println(res);
+        } else {
+            System.out.println(response.getStatusLine().getStatusCode());
+        }
+    }
+
 }
